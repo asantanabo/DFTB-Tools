@@ -1,0 +1,58 @@
+1. input files for the code:
+input
+mol.cif
+hessian.out (dftb+)
+
+2. the input file:
+
+#CELL
+Number_of_atoms_in_unit_cell  Ncell_a Ncell_b Ncell_c
+
+#PATH
+Number_of_path
+k_begin_a k_begin_b k_begin_c k_end_a k_end_b k_end_c Number_of_scanning
+...
+
+
+3. order of the supercells in the cif file (333 as a example):
+
+abc
+111
+112
+113
+121
+122
+123
+131
+132
+133
+211
+212
+..
+331
+332
+333
+
+(using loop: 
+
+  for a in range(0, Ncell_a):
+    for b in range(0, Ncell_b):
+      for c in range(0, Ncell_c):
+        print (xyz_unitcell)
+
+)
+
+4. compile (need mkl library):
+intel
+ifort -mkl bandopt.f90 -o bandopt
+
+gnu
+gfortran -L${MKLROOT}/lib/intel64 -Wl,--no-as-needed -lmkl_gf_ilp64 -lmkl_sequential -lmkl_core -lpthread -lm -ldl -fdefault-integer-8 -m64 -I${MKLROOT}/include bandopt.f90 -o bandopt
+
+gfortran with lapack
+gfortran -o bandopt bandopt.f90 -L/usr/lib/ -llapack -lblas
+
+
+5. output files:
+bandstructure.dat -- bandstructure information (first column for scanning number, rest columns for bands freq.)
+kpoints.dat -- high symmtric points (related to the scanning numbers in bandstructure.dat file)
